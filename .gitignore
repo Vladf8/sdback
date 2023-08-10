@@ -1,0 +1,5 @@
+/venv
+/.idea
+/stable-diffusion/models/ldm/stable-diffusion-v1
+/stable-diffusion/outputs
+/output
