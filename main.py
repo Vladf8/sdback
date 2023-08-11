@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.exceptions import HTTPException
 from fastapi import Query, UploadFile
 import logging
@@ -34,7 +34,7 @@ async def root() -> str:
 async def generate_text2image(prompt: str = Query(),
                               main_model: str = Query(default='stable_diffusion'),
                               device: str = Query(default='cpu'),
-                              lora_model: UploadFile = None) -> JSONResponse:
+                              lora_model: UploadFile = None) -> Response:
     logger.info(f"Generate text to image with prompt: {prompt}")
     if lora_model:
         logger.info(f"lora_model: {lora_model.filename}")
@@ -45,8 +45,8 @@ async def generate_text2image(prompt: str = Query(),
         image = run_stable_diffusion_model(prompt, f'lora_models/{lora_model.filename}', device)
         image_bytes = io.BytesIO()
         image.save(image_bytes, format='PNG')
-        image_bytes = str(image_bytes.getvalue())
-        return JSONResponse(content=image_bytes)
+        image_bytes = image_bytes.getvalue()
+        return Response(content=image_bytes, media_type="image/png")
     else:
         raise HTTPException(status_code=400, detail="main_model must be 'stable_diffusion'")
 
