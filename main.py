@@ -78,7 +78,7 @@ async def generate_img2text(image: str = Body(),
 
 def main() -> None:
     logger.info(f"Start fashion_api_backend service with host and port: ")
-    uvicorn.run("main:app", log_level="debug", reload=True)
+    uvicorn.run("main:app", log_level="debug", reload=True, host="0.0.0.0", port=8000)
 
 
 if __name__ == "__main__":
