@@ -3,11 +3,12 @@ from PIL import Image
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, Response
 from fastapi.exceptions import HTTPException
-from fastapi import Query, UploadFile
+from fastapi import Query, Body, UploadFile
 import logging
 from run_model import run_stable_diffusion_model, run_stable_diffusion_xl_model, run_blip
 import os
 import io
+import base64
 
 app = FastAPI(title="SD API")
 logger = logging.RootLogger(logging.INFO)
@@ -64,14 +65,13 @@ async def generate_text2image(prompt: str = Query(),
     description="Generate image to text",
     tags=["generate_img2text"],
 )
-async def generate_img2text(image: UploadFile,
+async def generate_img2text(image: str = Body(),
                             main_model: str = Query(default='blip'),
                             device: str = Query(default='cpu'),
                             conditional_text: str = Query(default='')) -> str:
-    logger.info(f"Generate image to text with image: {image.filename}")
+    # logger.info(f"Generate image to text with image: {image.filename}")
     if main_model == 'blip':
-        image = image.file.read()
-        image = io.BytesIO(image)
+        image = io.BytesIO(base64.b64decode(image))
         image = Image.open(image)
         text = run_blip(image, conditional_text, device)
         return text
