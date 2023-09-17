@@ -41,13 +41,13 @@ def run_blip(image: Image.Image, text: str | None = None, device: str = 'cpu') -
     image_rgb = image.convert('RGB')
     if text:
         # conditional image captioning
-        inputs = processor(image_rgb, text, return_tensors="pt")
+        inputs = processor(image_rgb, text, return_tensors="pt").to(device)
 
         out = model.generate(**inputs)
         return processor.decode(out[0], skip_special_tokens=True)
     else:
         # unconditional image captioning
-        inputs = processor(image_rgb, return_tensors="pt")
+        inputs = processor(image_rgb, return_tensors="pt").to(device)
 
         out = model.generate(**inputs)
         return processor.decode(out[0], skip_special_tokens=True)
