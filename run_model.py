@@ -15,6 +15,7 @@ from diffusers import (
 from fastapi import UploadFile
 from PIL import Image
 from transformers import BlipForConditionalGeneration, BlipProcessor
+import torch
 
 
 def run_stable_diffusion_model(
@@ -29,6 +30,9 @@ def run_stable_diffusion_model(
     image = pipe(
         prompt, num_inference_steps=25, guidance_scale=7.5, width=512, height=720
     ).images[0]
+    if device == "cuda":
+        del pipe
+        torch.cuda.empty_cache()
     return image
 
 
@@ -47,6 +51,9 @@ def run_stable_diffusion_xl_model(
         pipe.load_lora_weights(f"lora_models/{lora_model_file.filename}")
     pipe.to(device)
     image = pipe(prompt, num_inference_steps=25, width=768, height=768).images[0]
+    if device == "cuda":
+        del pipe
+        torch.cuda.empty_cache()
     return image
 
 
